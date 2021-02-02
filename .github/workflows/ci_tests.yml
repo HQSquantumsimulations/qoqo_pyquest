@@ -30,9 +30,9 @@
   #     - name: Lint with flake8
   #       run: |
   #         # stop the build if there are Python syntax errors or undefined names
-  #         flake8 --config=./.flake8 ./qoqo_pyquest --count
+  #         flake8 --config=./.flake8 ./qoqo_mock --count
   #     - name: Mypy check
   #       run: |
   #         # stop the build if there are Python syntax errors or undefined names
-  #         mypy --config-file=./.mypy.ini ./qoqo_pyquest  
+  #         mypy --config-file=./.mypy.ini ./qoqo_mock
 

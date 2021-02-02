@@ -33,8 +33,8 @@ install_requires = [
     'networkx',
 ]
 
-authors = ('HQS Quantum Simulations'
-           )
+authors = 'HQS Quantum Simulations'
+           
 
 
 setup(name='qoqo_pyquest',
