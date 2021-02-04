@@ -34,7 +34,6 @@ install_requires = [
 ]
 
 authors = 'HQS Quantum Simulations'
-           
 
 
 setup(name='qoqo_pyquest',
@@ -44,7 +43,7 @@ setup(name='qoqo_pyquest',
       packages=find_packages(exclude=('docs')),
       author=authors,
       author_email='info@quantumsimulations.de',
-      url='quantumsimulations.de',
+      url='https://quantumsimulations.de',
       license=License,
       python_requires='>=3.7',
       install_requires=install_requires,
