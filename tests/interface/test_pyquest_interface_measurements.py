@@ -97,7 +97,7 @@ def test_pragma_pauli_product_measurement_pyquest() -> None:
     assert test_dict['ro'].register[0] == 0
 
     operation = op(readout='ro',
-                   pauli_product=[1, 1],
+                   pauli_product=[0, 1],
                    )
     test_dict = {'ro': FloatRegister(definition)}
     state = 1 / np.sqrt(2) * np.array([0, 1, 1, 0])
@@ -220,12 +220,12 @@ def test_pragma_pauli_prod_measurement_pyquest() -> None:
     utils.destroyQureg()(qubits, env=env)
     utils.destroyQuestEnv()(env)
 
-@pytest.mark.parametrize("init", [(np.array([1, 0, 0, 0]), 1, [1, 0]),
-                                  (np.array([0, 0, 1, 0]), -1, [0, 1]),
-                                  (np.array([0, 1, 0, 0]), -1, [1, 0]),
-                                  (np.array([1 / np.sqrt(2), 1 / np.sqrt(2), 0, 0]), 0, [1, 0]),
-                                  (np.array([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)]), 1, [1, 1]),
-                                  (np.array([0, 1 / np.sqrt(2), 1 / np.sqrt(2), 0]), -1, [1, 1]),
+@pytest.mark.parametrize("init", [(np.array([1, 0, 0, 0]), 1, [ 0]),
+                                  (np.array([0, 0, 1, 0]), -1, [1]),
+                                  (np.array([0, 1, 0, 0]), -1, [0]),
+                                  (np.array([1 / np.sqrt(2), 1 / np.sqrt(2), 0, 0]), 0, [0]),
+                                  (np.array([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)]), 1, [0, 1]),
+                                  (np.array([0, 1 / np.sqrt(2), 1 / np.sqrt(2), 0]), -1, [0, 1]),
                                   ])
 def test_pragma_get_pauli_prod_measurement_pyquest(init) -> None:
     """Test measuring product of pauli operators with PyQuEST interface"""
@@ -235,7 +235,7 @@ def test_pragma_get_pauli_prod_measurement_pyquest(init) -> None:
 
     op = ops.PragmaGetPauliProduct
     operation = op(readout='ro',
-                   pauli_product=[1, 0]
+                   pauli_product=[0]
                    )
 
     env = utils.createQuestEnv()()
