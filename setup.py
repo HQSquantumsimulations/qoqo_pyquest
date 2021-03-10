@@ -26,11 +26,9 @@ __version__ = lines[-1].strip().split("'")[1].strip()
 
 install_requires = [
     'hqsbase>=0.7.0',
-    'qoqo>=0.2.2',
+    'qoqo>=0.2.4',
     'pyquest_cffi>=3.1.0',
     'numpy',
-    'pytest',
-    'networkx',
 ]
 
 authors = 'HQS Quantum Simulations'
