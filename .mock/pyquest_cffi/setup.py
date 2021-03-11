@@ -1,3 +1,4 @@
+"""Install qoqo_pyquest"""
 # Copyright © 2019-2021 HQS Quantum Simulations GmbH. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -9,5 +10,8 @@
 # is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
-"""qoqo_pyquest version information"""
-__version__ = 'v0.1.2'
+from setuptools import find_packages, setup
+
+setup(name='pyquest_cffi',
+      version='v100.1.2',
+      )
