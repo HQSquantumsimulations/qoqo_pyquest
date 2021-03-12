@@ -40,6 +40,7 @@ from qoqo.registers import (
 )
 import numpy as np
 from scipy import sparse as sp
+from scipy.linalg import eig
 
 
 # Create look-up tables
@@ -116,7 +117,6 @@ _PYQUEST_ARGUMENT_NAME_DICTS['MolmerSorensenXX'] = {'qubit': ('qubits', 'qubit')
                                                     'control': ('qubits', 'control')}
 _QUEST_OBJECTS['MolmerSorensenXX'] = qops.MolmerSorensenXX()
 
-_QUEST_OBJECTS['PragmaRepeatedMeasurement'] = qcheat.getRepeatedMeasurement()
 _PYQUEST_ARGUMENT_NAME_DICTS['PragmaSetStateVector'] = {}
 _QUEST_OBJECTS['PragmaSetStateVector'] = qcheat.initStateFromAmps()
 _PYQUEST_ARGUMENT_NAME_DICTS['PragmaSetDensityMatrix'] = {}
@@ -129,7 +129,11 @@ _PYQUEST_ARGUMENT_NAME_DICTS['PragmaDephasing'] = {'qubit': ('qubits', 'qubit')}
 _QUEST_OBJECTS['PragmaDephasing'] = qops.mixDephasing()
 _PYQUEST_ARGUMENT_NAME_DICTS['PragmaRandomNoise'] = {'qubit': ('qubits', 'qubit')}
 _QUEST_OBJECTS['PragmaRandomNoise'] = qops.pauliZ()
+_PYQUEST_ARGUMENT_NAME_DICTS['PragmaGeneralNoise'] = {'qubit': ('qubits', 'qubit'),
+                                                      'operators': ('parameters', 'operators')}
+_QUEST_OBJECTS['PragmaGeneralNoise'] = qops.mixKrausMap()
 _QUEST_OBJECTS['MeasureQubit'] = qops.measure()
+_QUEST_OBJECTS['PragmaRepeatedMeasurement'] = qcheat.getRepeatedMeasurement()
 
 _ALLOWED_PRAGMAS = ['PragmaSetNumberOfMeasurements',
                     'PragmaSetStateVector',
@@ -354,6 +358,10 @@ def pyquest_call_operation(
         _execute_PragmaPauliProdMeasurement(
             operation, qureg, classical_registers,
             calculator, qubit_names)
+    elif 'PragmaGeneralNoise' in tags:
+        _execute_PragmaGeneralNoise(
+            operation, qureg, classical_registers,
+            calculator, qubit_names, **kwargs)
     elif any(pragma in tags for pragma in _ALLOWED_PRAGMAS):
         pass
     else:
@@ -370,7 +378,7 @@ def _execute_GetPauliProduct(
         **kwargs) -> None:
     operation = cast(ops.PragmaGetPauliProduct, operation)
 
-    if operation._pauli_product == []:
+    if np.isclose(np.sum(operation._pauli_product), 0):
         classical_registers[operation._readout].register = [1, ]
         return None
     N = qureg.numQubitsRepresented
@@ -389,7 +397,7 @@ def _execute_GetPauliProduct(
             calculator=calculator,
             qubit_names=qubit_names,
             classical_registers=classical_registers)
-    qubits = [i for i in range(N) if i in operation._pauli_product]
+    qubits = [i for i in range(N) if operation._pauli_product[i] == 1]
     paulis = [3 for _ in qubits]
     pp = qcheat.calcExpecPauliProd().call_interactive(
         qureg=workspace, qubits=qubits, paulis=paulis, workspace=workspace_pp)
@@ -567,6 +575,73 @@ def _execute_PragmaPauliProdMeasurement(
     qutils.destroyQuestEnv(env)
     del env
     classical_registers[operation._readout].register[operation._readout_index] = meas
+
+
+def _execute_PragmaGeneralNoise(
+        operation: ops.Operation,
+        qureg: tqureg,
+        classical_registers: Dict[str, Union[BitRegister,
+                                             FloatRegister, ComplexRegister]],
+        calculator: Optional[Calculator] = None,
+        qubit_names: Optional[Dict[int, int]] = None,
+        **kwargs) -> None:
+    operation = cast(ops.PragmaGeneralNoise, operation)
+    quest_obj = _QUEST_OBJECTS['PragmaGeneralNoise']
+
+    paulis = [np.array([[0, 1], [1, 0]], dtype=complex),
+              np.array([[0, -1j], [1j, 0]], dtype=complex),
+              np.array([[1, 0], [0, -1]], dtype=complex)]
+
+    delta_t = operation._gate_time * operation._rate
+    h_nm = operation._operators
+    eigenvals, u_matrix = eig(h_nm)
+    if not np.array_equal(eigenvals.imag, [0.0, 0.0, 0.0]):
+        raise ValueError('The operator map is not positive semi-definite')
+    for eigenvalue in eigenvals:
+        if eigenvalue.real < 0:
+            raise ValueError('The operator map is not positive semi-definite')
+
+    L_matrices = []
+    for i in range(len(paulis)):
+        L_matrix = np.zeros((2, 2), dtype=complex)
+        for j, pauli in enumerate(paulis):
+            L_matrix += u_matrix[j][i] * pauli
+        L_matrices.append(L_matrix)
+
+    G_matrix = np.zeros((2, 2), dtype=complex)
+    for i in range(len(eigenvals)):
+        G_matrix += eigenvals[i] * np.dot(L_matrices[i].conj().T, L_matrices[i])
+    G_matrix = G_matrix * (-0.5)
+
+    K_list = [np.array([[1, 0], [0, 1]], dtype=complex) + G_matrix * float(delta_t)]
+    for i in range(len(eigenvals)):
+        K_list.append((float(delta_t) ** 0.5) * eigenvals[i] * L_matrices[i])
+    print(K_list)
+
+    # Check that K_list is a Completely Positive Map
+    for r in range(2):
+        for c in range(2):
+            elemRe: float = 0.0
+            elemIm: float = 0.0
+            for n in range(len(K_list)):
+                for k in range(2):
+                    elemRe += K_list[n].real[k][r] * K_list[n].real[k][c] \
+                        + K_list[n].imag[k][r] * K_list[n].imag[k][c]
+                    elemIm += K_list[n].real[k][r] * K_list[n].imag[k][c] \
+                        - K_list[n].imag[k][r] * K_list[n].real[k][c]
+            dist: float = abs(elemIm) + abs(elemRe)
+            if r == c:
+                dist = dist - 1
+            if dist <= 1e-14:
+                print(dist)
+                raise ValueError('Kraus operators are not a CPM')
+
+    for K in K_list:
+        if np.any(K.real) < 0 or np.any(K.real) > 1:
+            raise ValueError('Probabilities must be real and in [0, 1]')
+        if np.any(K.imag) > 0:
+            raise ValueError('Probabilities must be real and in [0, 1]')
+    quest_obj(qureg=qureg, qubit=operation._qubit, operators=K_list)
 
 
 def _execute_SingleQubitGate(
