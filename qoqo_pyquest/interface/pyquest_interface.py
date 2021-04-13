@@ -397,7 +397,7 @@ def _execute_GetPauliProduct(
             calculator=calculator,
             qubit_names=qubit_names,
             classical_registers=classical_registers)
-    qubits = [i for i in range(N) if operation._pauli_product[i] == 1]
+    qubits = [i for i in range(N) if i in operation._pauli_product]
     paulis = [3 for _ in qubits]
     pp = qcheat.calcExpecPauliProd().call_interactive(
         qureg=workspace, qubits=qubits, paulis=paulis, workspace=workspace_pp)

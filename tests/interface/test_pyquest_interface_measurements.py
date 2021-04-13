@@ -220,10 +220,10 @@ def test_pragma_pauli_prod_measurement_pyquest() -> None:
     utils.destroyQureg()(qubits, env=env)
     utils.destroyQuestEnv()(env)
 
-@pytest.mark.parametrize("init", [(np.array([1, 0, 0, 0]), 1, [ 0]),
-                                  (np.array([0, 0, 1, 0]), -1, [1]),
-                                  (np.array([0, 1, 0, 0]), -1, [0]),
-                                  (np.array([1 / np.sqrt(2), 1 / np.sqrt(2), 0, 0]), 0, [0]),
+@pytest.mark.parametrize("init", [(np.array([1, 0, 0, 0]), 1, [1, 0]),
+                                  (np.array([0, 0, 1, 0]), -1, [0, 1]),
+                                  (np.array([0, 1, 0, 0]), -1, [0, 1]),
+                                  (np.array([1 / np.sqrt(2), 1 / np.sqrt(2), 0, 0]), 0, [0, 1]),
                                   (np.array([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)]), 1, [0, 1]),
                                   (np.array([0, 1 / np.sqrt(2), 1 / np.sqrt(2), 0]), -1, [0, 1]),
                                   ])
@@ -235,7 +235,7 @@ def test_pragma_get_pauli_prod_measurement_pyquest(init) -> None:
 
     op = ops.PragmaGetPauliProduct
     operation = op(readout='ro',
-                   pauli_product=[0]
+                   pauli_product=[0, 1]
                    )
 
     env = utils.createQuestEnv()()

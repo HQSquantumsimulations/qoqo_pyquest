@@ -16,7 +16,10 @@ path = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(path, 'README.md')) as file:
     readme = file.read()
 
-License = 'Apache-2.0'
+print('We need to write a license file')
+License = 'Copyright © 2019-2021 HQS Quantum Simulations GmbH. All Rights Reserved.'
+""" with open(os.path.join('LICENSE')) as file:
+    license = file.read() """
 
 # obtain current version
 __version__ = None
@@ -26,12 +29,19 @@ __version__ = lines[-1].strip().split("'")[1].strip()
 
 install_requires = [
     'hqsbase>=0.7.0',
-    'qoqo>=0.2.4',
+    'qoqo>=0.2.2',
     'pyquest_cffi>=3.1.0',
     'numpy',
+    'pytest',
+    'networkx',
 ]
 
-authors = 'HQS Quantum Simulations'
+authors = ('HQS Quantum Simulations'
+           + 'Kirsten Bark'
+           + 'Keith Fratus'
+           + 'Jan Reiner'
+           + 'Nicolas Vogt'
+           + 'Sebastian Zanker')
 
 
 setup(name='qoqo_pyquest',
@@ -41,7 +51,7 @@ setup(name='qoqo_pyquest',
       packages=find_packages(exclude=('docs')),
       author=authors,
       author_email='info@quantumsimulations.de',
-      url='https://quantumsimulations.de',
+      url='quantumsimulations.de',
       license=License,
       python_requires='>=3.7',
       install_requires=install_requires,
