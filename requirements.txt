@@ -1,7 +1,10 @@
 hqsbase>=0.7.0
-qoqo>=0.2.2
+qoqo>=0.2.4
 numpy
-pytest
-networkx
 pyyaml
-pyquest_cffi
+.mock/pyquest_cffi/
+sphinx >= 1.4
+nbsphinx
+pygments
+recommonmark
+sphinx_rtd_theme
