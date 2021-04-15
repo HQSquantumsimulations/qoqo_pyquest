@@ -29,11 +29,10 @@ install_requires = [
     'qoqo>=0.2.4',
     'pyquest_cffi>=3.1.0',
     'numpy',
-    'pytest',
-    'networkx',
 ]
 
 authors = 'HQS Quantum Simulations'
+
 
 setup(name='qoqo_pyquest',
       description='Quantum Computing Base Package',
