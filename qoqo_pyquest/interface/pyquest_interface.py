@@ -654,7 +654,7 @@ def _execute_SingleQubitGate(
     quest_obj = cast(qops.compactUnitary, _QUEST_OBJECTS['SingleQubitGate'])
     quest_kwargs = dict()
     quest_kwargs['qureg'] = qureg
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -694,7 +694,7 @@ def _execute_SingleQubitGateOperation(
     quest_obj = qops.compactUnitary()
     quest_kwargs = dict()
     quest_kwargs['qureg'] = qureg
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -727,7 +727,7 @@ def _execute_TwoQubitGateOperation(
         **kwargs) -> None:
     operation = cast(ops.TwoQubitGateOperation, operation)
     quest_obj = qops.twoQubitUnitary()
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -793,7 +793,7 @@ def _execute_PragmaRandomNoise(
         **kwargs) -> None:
     operation = cast(ops.PragmaRandomNoise, operation)
     quest_obj = _QUEST_OBJECTS['PragmaRandomNoise']
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -911,7 +911,7 @@ def _execute_GateOperation(
     quest_obj = _QUEST_OBJECTS[tag]
     quest_kwargs = dict()
     quest_kwargs['qureg'] = qureg
-    if operation._parameterized is True and calculator is None:
+    if operation._parametrized is True and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
