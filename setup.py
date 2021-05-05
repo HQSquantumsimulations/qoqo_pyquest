@@ -26,7 +26,7 @@ __version__ = lines[-1].strip().split("'")[1].strip()
 
 install_requires = [
     'hqsbase>=0.7.0',
-    'qoqo>=0.2.4',
+    'qoqo==0.2.4',
     'pyquest_cffi>=3.1.0',
     'numpy',
 ]
