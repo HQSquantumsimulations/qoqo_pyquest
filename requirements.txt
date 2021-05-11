@@ -1,5 +1,5 @@
 hqsbase>=0.7.0
-qoqo==0.2.6
+qoqo>=0.3.0
 numpy
 pyyaml
 .mock/pyquest_cffi/

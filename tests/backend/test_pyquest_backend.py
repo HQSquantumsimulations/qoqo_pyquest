@@ -96,7 +96,7 @@ def test_pyquest():
     """Test PyQuEST function"""
     circuit = Circuit()
     circuit += ops.RotateX(qubit=0, theta='theta')
-    assert circuit.is_parameterized
+    assert circuit.is_parametrized
     calculator = Calculator()
     calculator.set('theta', np.pi)
     env = utils.createQuestEnv()()
@@ -110,7 +110,7 @@ def test_pyquest():
     utils.destroyQureg().call_interactive(qureg, env)
     utils.destroyQuestEnv().call_interactive(env)
     circuit.substitute_parameters(substitution_dict={'theta': np.pi})
-    assert not circuit.is_parameterized
+    assert not circuit.is_parametrized
     env = utils.createQuestEnv()()
     qureg = utils.createQureg()(1, env)
     pyquest_call_circuit(circuit, qureg, {})

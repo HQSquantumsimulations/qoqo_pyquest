@@ -116,7 +116,6 @@ _PYQUEST_ARGUMENT_NAME_DICTS['MolmerSorensenXX'] = {'qubit': ('qubits', 'qubit')
                                                     'control': ('qubits', 'control')}
 _QUEST_OBJECTS['MolmerSorensenXX'] = qops.MolmerSorensenXX()
 
-_QUEST_OBJECTS['PragmaRepeatedMeasurement'] = qcheat.getRepeatedMeasurement()
 _PYQUEST_ARGUMENT_NAME_DICTS['PragmaSetStateVector'] = {}
 _QUEST_OBJECTS['PragmaSetStateVector'] = qcheat.initStateFromAmps()
 _PYQUEST_ARGUMENT_NAME_DICTS['PragmaSetDensityMatrix'] = {}
@@ -130,6 +129,7 @@ _QUEST_OBJECTS['PragmaDephasing'] = qops.mixDephasing()
 _PYQUEST_ARGUMENT_NAME_DICTS['PragmaRandomNoise'] = {'qubit': ('qubits', 'qubit')}
 _QUEST_OBJECTS['PragmaRandomNoise'] = qops.pauliZ()
 _QUEST_OBJECTS['MeasureQubit'] = qops.measure()
+_QUEST_OBJECTS['PragmaRepeatedMeasurement'] = qcheat.getRepeatedMeasurement()
 
 _ALLOWED_PRAGMAS = ['PragmaSetNumberOfMeasurements',
                     'PragmaSetStateVector',
@@ -370,7 +370,7 @@ def _execute_GetPauliProduct(
         **kwargs) -> None:
     operation = cast(ops.PragmaGetPauliProduct, operation)
 
-    if operation._pauli_product == []:
+    if np.isclose(np.sum(operation._pauli_product), 0):
         classical_registers[operation._readout].register = [1, ]
         return None
     N = qureg.numQubitsRepresented
@@ -579,7 +579,7 @@ def _execute_SingleQubitGate(
     quest_obj = cast(qops.compactUnitary, _QUEST_OBJECTS['SingleQubitGate'])
     quest_kwargs = dict()
     quest_kwargs['qureg'] = qureg
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -619,7 +619,7 @@ def _execute_SingleQubitGateOperation(
     quest_obj = qops.compactUnitary()
     quest_kwargs = dict()
     quest_kwargs['qureg'] = qureg
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -652,7 +652,7 @@ def _execute_TwoQubitGateOperation(
         **kwargs) -> None:
     operation = cast(ops.TwoQubitGateOperation, operation)
     quest_obj = qops.twoQubitUnitary()
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -718,7 +718,7 @@ def _execute_PragmaRandomNoise(
         **kwargs) -> None:
     operation = cast(ops.PragmaRandomNoise, operation)
     quest_obj = _QUEST_OBJECTS['PragmaRandomNoise']
-    if operation.is_parameterized and calculator is None:
+    if operation.is_parametrized and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
@@ -836,7 +836,7 @@ def _execute_GateOperation(
     quest_obj = _QUEST_OBJECTS[tag]
     quest_kwargs = dict()
     quest_kwargs['qureg'] = qureg
-    if operation._parameterized is True and calculator is None:
+    if operation._parametrized is True and calculator is None:
         raise ops.OperationNotInBackendError(
             'Interactive PyQuEST can not be called with symbolic parameters'
             + ', substitute parameters first')
