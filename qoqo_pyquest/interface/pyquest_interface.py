@@ -40,7 +40,6 @@ from qoqo.registers import (
 )
 import numpy as np
 from scipy import sparse as sp
-from scipy.linalg import eig
 
 
 # Create look-up tables
