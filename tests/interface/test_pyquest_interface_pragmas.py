@@ -208,53 +208,5 @@ def test_random_noise_operator(gate_time, depolarisation_rate, dephasing_rate):
     utils.destroyQuestEnv().call_interactive(env)
 
 
-# @pytest.mark.parametrize("gate_time", list(np.arange(0, 2 * np.pi, 2 * np.pi / 3)))
-# @pytest.mark.parametrize("rate", list(np.arange(0, 2 * np.pi, 2 * np.pi / 3)))
-# @pytest.mark.parametrize("operators", [
-#     np.array([[1, -1j, 0], [1j, 1, 0], [0, 0, 0]]),  # damping channel
-# ])
-# def test_general_noise_operator(gate_time, rate, operators):
-#     """Test PRAGMA operators applying general noise with PyQuEST interface"""
-#     op = ops.PragmaGeneralNoise
-#     gate_time = gate_time * 0.01
-#     rate = rate * 0.01
-
-
-#     (q0, Gate_time, Rate) = (0, 'gate_time', 'rate')
-#     operation = op(q0, gate_time=gate_time, rate=rate, operators=operators)
-
-#     substitution_dict = {'gate_time': gate_time, 'rate': rate}
-#     calculator = Calculator()
-#     for name, val in substitution_dict.items():
-#         calculator.set(name, val)
-
-#     env = utils.createQuestEnv()()
-#     qureg = utils.createDensityQureg()(1, env)
-#     state_vec_ref = cheat.getDensityMatrix()(qureg)
-#     pyquest_call_operation(operation=operation,
-#                            qureg=qureg,
-#                            classical_registers={},
-#                            calculator=None)
-#     if gate_time == 0 or rate == 0:
-#         state_vec = cheat.getDensityMatrix()(qureg)
-#         npt.assert_array_almost_equal(state_vec_ref, state_vec)
-
-#     utils.destroyQureg().call_interactive(qureg, env)
-#     utils.destroyQuestEnv().call_interactive(env)
-
-#     operation.substitute_parameters(substitution_dict)
-
-#     env = utils.createQuestEnv()()
-#     qureg = utils.createDensityQureg()(1, env)
-#     state_vec_ref = cheat.getDensityMatrix()(qureg)
-#     pyquest_call_operation(operation=operation, qureg=qureg, classical_registers={})
-#     if gate_time == 0 or rate == 0:
-#         state_vec = cheat.getDensityMatrix()(qureg)
-#         npt.assert_array_almost_equal(state_vec_ref, state_vec)
-
-#     utils.destroyQureg().call_interactive(qureg, env)
-#     utils.destroyQuestEnv().call_interactive(env)
-
-
 if __name__ == '__main__':
     pytest.main(sys.argv)
