@@ -1,3 +1,5 @@
+<img src="qoqo_Logo_vertical_color.png" alt="qoqo logo" width="300" />
+
 # qoqo-pyquest
 
 [![Documentation Status](https://readthedocs.org/projects/qoqo_pyquest/badge/?version=latest)](https://qoqo_pyquest.readthedocs.io/en/latest/?badge=latest)
