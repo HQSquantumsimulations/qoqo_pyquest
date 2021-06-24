@@ -751,9 +751,8 @@ def _execute_PragmaRandomNoise(
     if r0 < 1 - gate_time * np.sum(rates):
         applied_pauli = 0
     else:
-        applied_pauli = np.random.choice([1, 2, 3],
-                                         size=1,
-                                         p=probabilities_normalised)
+        applied_pauli = int(np.random.choice([1, 2, 3],
+                                             p=probabilities_normalised))
     if applied_pauli == 0:
         return None
     else:
