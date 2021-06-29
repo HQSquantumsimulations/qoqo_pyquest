@@ -8,7 +8,7 @@
 ![PyPI - License](https://img.shields.io/pypi/l/qoqo_pyquest)
 [![PyPI - Format](https://img.shields.io/pypi/format/qoqo_pyquest)](https://pypi.org/project/qoqo_pyquest/)
 
-PyQuEST interface for the qoqo quantum toolkit by [HQS Quantum Simulations](https://quantumsimulations.de).
+PyQuEST interface for the [qoqo](https://github.com/HQSquantumsimulations/qoqo) quantum toolkit by [HQS Quantum Simulations](https://quantumsimulations.de).
 
 qoqo-pyquest provides the PyQuestBackend class that allows users to simulate a qoqo circuit.
 The PyQuestBackend can be uses together with the Measurement or DoUnitary classes of qoqo for automated observable measurements.

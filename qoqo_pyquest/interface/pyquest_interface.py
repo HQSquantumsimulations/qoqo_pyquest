@@ -21,115 +21,19 @@ from pyquest_cffi.questlib import (
     tqureg
 )
 from typing import (
-    Optional,
     Dict,
+    Any,
     Union,
     cast,
     List,
     Sequence,
-    Tuple
 )
-from hqsbase.calculator import (
-    Calculator,
+from qoqo_calculator_pyo3 import (
     CalculatorFloat
 )
-from qoqo.registers import (
-    BitRegister,
-    FloatRegister,
-    ComplexRegister,
-)
 import numpy as np
-from scipy import sparse as sp
-
 
 # Create look-up tables
-
-_PYQUEST_ARGUMENT_NAME_DICTS: Dict[str, Dict[str, CalculatorFloat]] = dict()
-_ADDITIONAL_QUEST_ARGS: Dict[str, Dict[str, float]] = dict()
-_QUEST_OBJECTS: Dict[str, _PYQUEST] = dict()
-
-_PYQUEST_ARGUMENT_NAME_DICTS['RotateZ'] = {'qubit': ('qubits', 'qubit'),
-                                           'theta': ('parameters', 'theta')}
-_QUEST_OBJECTS['RotateZ'] = qops.rotateZ()
-_PYQUEST_ARGUMENT_NAME_DICTS['RotateX'] = {'qubit': ('qubits', 'qubit'),
-                                           'theta': ('parameters', 'theta')}
-_QUEST_OBJECTS['RotateX'] = qops.rotateX()
-_PYQUEST_ARGUMENT_NAME_DICTS['RotateY'] = {'qubit': ('qubits', 'qubit'),
-                                           'theta': ('parameters', 'theta')}
-_QUEST_OBJECTS['RotateY'] = qops.rotateY()
-_PYQUEST_ARGUMENT_NAME_DICTS['SingleQubitGate'] = {'qubit': ('qubits', 'qubit'),
-                                                   'alpha': ('parameters', [('alpha_r', 1),
-                                                                            ('alpha_i', 1j)]),
-                                                   'beta': ('parameters', [('beta_r', 1),
-                                                                           ('beta_i', 1j)])}
-_QUEST_OBJECTS['SingleQubitGate'] = qops.compactUnitary()
-_PYQUEST_ARGUMENT_NAME_DICTS['Hadamard'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['Hadamard'] = qops.hadamard()
-_PYQUEST_ARGUMENT_NAME_DICTS['PauliX'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['PauliX'] = qops.pauliX()
-_PYQUEST_ARGUMENT_NAME_DICTS['PauliY'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['PauliY'] = qops.pauliY()
-_PYQUEST_ARGUMENT_NAME_DICTS['PauliZ'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['PauliZ'] = qops.pauliZ()
-_PYQUEST_ARGUMENT_NAME_DICTS['SGate'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['SGate'] = qops.sGate()
-_PYQUEST_ARGUMENT_NAME_DICTS['TGate'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['TGate'] = qops.tGate()
-_PYQUEST_ARGUMENT_NAME_DICTS['SqrtPauliX'] = {'qubit': ('qubits', 'qubit')}
-_ADDITIONAL_QUEST_ARGS['SqrtPauliX'] = {'theta': np.pi / 2}
-_QUEST_OBJECTS['SqrtPauliX'] = qops.rotateX()
-_PYQUEST_ARGUMENT_NAME_DICTS['InvSqrtPauliX'] = {'qubit': ('qubits', 'qubit')}
-_ADDITIONAL_QUEST_ARGS['InvSqrtPauliX'] = {'theta': -np.pi / 2}
-_QUEST_OBJECTS['InvSqrtPauliX'] = qops.rotateX()
-_PYQUEST_ARGUMENT_NAME_DICTS['RotateAroundSphericalAxis'] = {'qubit': ('qubits', 'qubit'),
-                                                             'theta': ('parameters', 'theta'),
-                                                             'spherical_phi': ('parameters',
-                                                                               'spherical_phi'),
-                                                             'spherical_theta': ('parameters',
-                                                                                 'spherical_theta')}
-_QUEST_OBJECTS['RotateAroundSphericalAxis'] = qops.rotateAroundSphericalAxis()
-_PYQUEST_ARGUMENT_NAME_DICTS['W'] = {'qubit': ('qubits', 'qubit'),
-                                     'theta': ('parameters', 'theta'),
-                                     'spherical_phi': ('parameters', 'spherical_phi')}
-_ADDITIONAL_QUEST_ARGS['W'] = {'spherical_theta': np.pi / 2}
-_QUEST_OBJECTS['W'] = qops.rotateAroundSphericalAxis()
-_PYQUEST_ARGUMENT_NAME_DICTS['CNOT'] = {'qubit': ('qubits', 'qubit'),
-                                        'control': ('qubits', 'control')}
-_QUEST_OBJECTS['CNOT'] = qops.controlledNot()
-_PYQUEST_ARGUMENT_NAME_DICTS['SqrtISwap'] = {'qubit': ('qubits', 'qubit'),
-                                             'control': ('qubits', 'control')}
-_QUEST_OBJECTS['SqrtISwap'] = qops.sqrtISwap()
-_PYQUEST_ARGUMENT_NAME_DICTS['InvSqrtISwap'] = {'qubit': ('qubits', 'qubit'),
-                                                'control': ('qubits', 'control')}
-_QUEST_OBJECTS['InvSqrtISwap'] = qops.invSqrtISwap()
-_PYQUEST_ARGUMENT_NAME_DICTS['ControlledPhaseShift'] = {'qubit': ('qubits', 'qubit'),
-                                                        'control': ('qubits', 'control'),
-                                                        'theta': ('parameters', 'theta')}
-_QUEST_OBJECTS['ControlledPhaseShift'] = qops.controlledPhaseShift()
-_PYQUEST_ARGUMENT_NAME_DICTS['ControlledPauliY'] = {'qubit': ('qubits', 'qubit'),
-                                                    'control': ('qubits', 'control')}
-_QUEST_OBJECTS['ControlledPauliY'] = qops.controlledPauliY()
-_PYQUEST_ARGUMENT_NAME_DICTS['ControlledPauliZ'] = {'qubit': ('qubits', 'qubit'),
-                                                    'control': ('qubits', 'control')}
-_QUEST_OBJECTS['ControlledPauliZ'] = qops.controlledPhaseFlip()
-_PYQUEST_ARGUMENT_NAME_DICTS['MolmerSorensenXX'] = {'qubit': ('qubits', 'qubit'),
-                                                    'control': ('qubits', 'control')}
-_QUEST_OBJECTS['MolmerSorensenXX'] = qops.MolmerSorensenXX()
-
-_PYQUEST_ARGUMENT_NAME_DICTS['PragmaSetStateVector'] = {}
-_QUEST_OBJECTS['PragmaSetStateVector'] = qcheat.initStateFromAmps()
-_PYQUEST_ARGUMENT_NAME_DICTS['PragmaSetDensityMatrix'] = {}
-_QUEST_OBJECTS['PragmaSetDensityMatrix'] = qcheat.initStateFromAmps()
-_PYQUEST_ARGUMENT_NAME_DICTS['PragmaDamping'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['PragmaDamping'] = qops.mixDamping()
-_PYQUEST_ARGUMENT_NAME_DICTS['PragmaDepolarise'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['PragmaDepolarise'] = qops.mixDepolarising()
-_PYQUEST_ARGUMENT_NAME_DICTS['PragmaDephasing'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['PragmaDephasing'] = qops.mixDephasing()
-_PYQUEST_ARGUMENT_NAME_DICTS['PragmaRandomNoise'] = {'qubit': ('qubits', 'qubit')}
-_QUEST_OBJECTS['PragmaRandomNoise'] = qops.pauliZ()
-_QUEST_OBJECTS['MeasureQubit'] = qops.measure()
-_QUEST_OBJECTS['PragmaRepeatedMeasurement'] = qcheat.getRepeatedMeasurement()
 
 _ALLOWED_PRAGMAS = ['PragmaSetNumberOfMeasurements',
                     'PragmaSetStateVector',
@@ -142,7 +46,7 @@ _ALLOWED_PRAGMAS = ['PragmaSetNumberOfMeasurements',
                     'PragmaOverrotation',
                     'PragmaStop',
                     'PragmaGlobalPhase',
-                    'PragmaParameterSubstitution']
+                    'PragmaOverrotation',]
 
 
 # Defining the actual call
@@ -150,11 +54,11 @@ _ALLOWED_PRAGMAS = ['PragmaSetNumberOfMeasurements',
 def pyquest_call_circuit(
         circuit: Circuit,
         qureg: tqureg,
-        classical_registers: Dict[str, Union[BitRegister,
-                                             FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
+        classical_bit_registers: Dict[str, List[bool]],
+        classical_float_registers: Dict[str, List[float]],
+        classical_complex_registers: Dict[str, List[complex]],
+        output_bit_register_dict: Dict[str, List[List[bool]]],
+) -> None:
     """Execute the qoqo circuit with PyQuEST
 
     The PyQuEST package is used to simulate a quantum computer, and this interface provides the
@@ -164,214 +68,205 @@ def pyquest_call_circuit(
     Args:
         circuit: The qoqo circuit that is executed
         qureg: The quantum register pyquest_cffi operates on
-        classical_registers: The classical registers used for input/output
-        calculator: The HQSBase Calculator used to replace symbolic parameters
-        qubit_names: The dictionary of qubit names to translate to
-        **kwargs: Additional keyword arguments
+        classical_bit_registers: Dictionary or registers (lists) containing bit readout values
+        classical_float_registers: Dictionary or registers (lists)
+                                   containing float readout values
+        classical_complex_registers: Dictionary or registers (lists)
+                                     containing complex readout values
+        output_bit_register_dict: Dictionary or lists of registers (lists)
+                              containing a register for each repetition of the circuit
     """
     for op in circuit:
         pyquest_call_operation(op,
                                qureg,
-                               classical_registers,
-                               calculator,
-                               qubit_names,
-                               **kwargs)
+                               classical_bit_registers,
+                               classical_float_registers,
+                               classical_complex_registers,
+                               output_bit_register_dict,
+                               )
 
 
 def pyquest_call_operation(
-        operation: ops.Operation,
+        operation: Any,
         qureg: tqureg,
-        classical_registers: Dict[str, Union[BitRegister,
-                                             FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
+        classical_bit_registers: Dict[str, List[bool]],
+        classical_float_registers: Dict[str, List[float]],
+        classical_complex_registers: Dict[str, List[complex]],
+        output_bit_register_dict: Dict[str, List[List[bool]]],
+) -> None:
     """Execute the qoqo operation with PyQuEST
 
     Args:
         operation: The qoqo operation that is executed
         qureg: The quantum register pyquest_cffi operates on
-        classical_registers: The classical registers used for input/output
-        calculator: The HQSBase Calculator used to replace symbolic parameters
-        qubit_names: The dictionary of qubit names to translate to
-        **kwargs: Additional keyword arguments
+        classical_bit_registers: Dictionary or registers (lists) containing bit readout values
+        classical_float_registers: Dictionary or registers (lists) containing float readout values
+        classical_complex_registers: Dictionary or registers (lists)
+                                     containing complex readout values
+        output_bit_register_dict: Dictionary or lists of registers (lists)
+                              containing a register for each repetition of the circuit
 
     Raises:
-        OperationNotInBackendError: Operation not in PyQuEST backend
+        RuntimeError: Operation not in PyQuEST backend
     """
-    tags = operation._operation_tags
+    tags = operation.tags()
     if 'RotateZ' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'RotateZ',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.RotateZ, operation)
+        qops.rotateZ()(qureg=qureg, qubit=operation.qubit(), theta=operation.theta().float())
     elif 'RotateX' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'RotateX',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.RotateX, operation)
+        qops.rotateX()(qureg=qureg, qubit=operation.qubit(), theta=operation.theta().float())
     elif 'RotateY' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'RotateY',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.RotateY, operation)
+        qops.rotateY()(qureg=qureg, qubit=operation.qubit(), theta=operation.theta().float())
     elif 'SqrtISwap' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'SqrtISwap',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.SqrtISwap, operation)
+        qops.sqrtISwap()(qureg=qureg, control=operation.control(), qubit=operation.target())
     elif 'CNOT' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'CNOT',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.CNOT, operation)
+        qops.controlledNot()(qureg=qureg, control=operation.control(), qubit=operation.target())
     elif 'InvSqrtISwap' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'InvSqrtISwap',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.InvSqrtISwap, operation)
+        qops.invSqrtISwap()(qureg=qureg, control=operation.control(), qubit=operation.target())
     elif 'Hadamard' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'Hadamard',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.Hadamard, operation)
+        qops.hadamard()(qureg=qureg, qubit=operation.qubit())
     elif 'PauliX' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PauliX',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.PauliX, operation)
+        qops.pauliX()(qureg=qureg, qubit=operation.qubit())
     elif 'PauliY' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PauliY',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.PauliY, operation)
+        qops.pauliY()(qureg=qureg, qubit=operation.qubit())
     elif 'PauliZ' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PauliZ',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.PauliZ, operation)
+        qops.pauliZ()(qureg=qureg, qubit=operation.qubit())
     elif 'SGate' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'SGate',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.SGate, operation)
+        qops.sGate()(qureg=qureg, qubit=operation.qubit())
     elif 'TGate' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'TGate',
-            calculator, qubit_names, **kwargs)
+        operation = cast(ops.TGate, operation)
+        qops.tGate()(qureg=qureg, qubit=operation.qubit())
     elif 'SqrtPauliX' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'SqrtPauliX',
-            calculator, qubit_names, **kwargs)
+        qops.rotateX()(qureg=qureg, qubit=operation.qubit(), theta=np.pi / 2)
     elif 'InvSqrtPauliX' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'InvSqrtPauliX',
-            calculator, qubit_names, **kwargs)
+        qops.rotateX()(qureg=qureg, qubit=operation.qubit(), theta=-np.pi / 2)
     elif 'ControlledPhaseShift' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'ControlledPhaseShift',
-            calculator, qubit_names, **kwargs)
+        qops.controlledPhaseShift()(qureg=qureg, control=operation.control(),
+                                    qubit=operation.target(), theta=operation.theta().float())
     elif 'ControlledPauliY' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'ControlledPauliY',
-            calculator, qubit_names, **kwargs)
+        qops.controlledPauliY()(qureg=qureg, control=operation.control(),
+                                qubit=operation.target())
     elif 'ControlledPauliZ' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'ControlledPauliZ',
-            calculator, qubit_names, **kwargs)
+        qops.controlledPhaseFlip()(qureg=qureg, control=operation.control(),
+                                qubit=operation.target())
     elif 'RotateAroundSphericalAxis' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'RotateAroundSphericalAxis',
-            calculator, qubit_names, **kwargs)
-    elif 'W' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'W',
-            calculator, qubit_names, **kwargs)
-    # elif 'MolmerSorensenXX' in tags:
-    #     _execute_GateOperation(
-    #         operation, qureg, 'MolmerSorensenXX',
-    #         calculator, qubit_names, **kwargs)
-    elif 'SingleQubitGate' in tags:
-        _execute_SingleQubitGate(
-            operation, qureg,
-            calculator, qubit_names, **kwargs)
+        qops.rotateAroundSphericalAxis()(
+            qureg=qureg, qubit=operation.qubit(), theta=operation.theta().float(),
+            spherical_theta=operation.spherical_theta().float(),
+            spherical_phi=operation.spherical_phi().float())
     elif 'SingleQubitGateOperation' in tags:
-        _execute_SingleQubitGateOperation(
-            operation, qureg,
-            calculator, qubit_names, **kwargs)
+        qops.compactUnitary()(qubit=operation.qubit(),
+                              qureg=qureg,
+                              alpha=operation.alpha_r().float() + 1j * operation.alpha_i().float(),
+                              beta=operation.beta_r().float() + 1j * operation.beta_i().float())
     elif 'TwoQubitGateOperation' in tags:
-        _execute_TwoQubitGateOperation(
-            operation, qureg,
-            calculator, qubit_names, **kwargs)
+        qops.twoQubitUnitary()(qureg=qureg, target_qubit_2=operation.control(),
+                               target_qubit_1=operation.target(), matrix=operation.unitary_matrix())
     elif 'PragmaRepeatedMeasurement' in tags:
         _execute_PragmaRepeatedMeasurement(
-            operation, qureg, classical_registers,
-            calculator, qubit_names, **kwargs)
+            operation, qureg,
+            classical_bit_registers,
+            output_bit_register_dict,
+        )
     elif 'PragmaDamping' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PragmaDamping',
-            calculator, qubit_names, **kwargs)
-    elif 'PragmaDepolarise' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PragmaDepolarise',
-            calculator, qubit_names, **kwargs)
+        qops.mixDamping()(
+            qureg=qureg, qubit=operation.qubit(), probability=operation.probability().float())
+    elif 'PragmaDepolarising' in tags:
+        qops.mixDepolarising()(
+            qureg=qureg, qubit=operation.qubit(), probability=operation.probability().float())
     elif 'PragmaDephasing' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PragmaDephasing',
-            calculator, qubit_names, **kwargs)
+        qops.mixDephasing()(
+            qureg=qureg, qubit=operation.qubit(), probability=operation.probability().float())
     elif 'PragmaSetStateVector' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PragmaSetStateVector',
-            calculator, qubit_names, **kwargs)
+        vector = operation.statevector()
+        qcheat.initStateFromAmps()(qureg=qureg, reals=np.real(vector), imags=np.imag(vector))
     elif 'PragmaSetDensityMatrix' in tags:
-        _execute_GateOperation(
-            operation, qureg, 'PragmaSetDensityMatrix',
-            calculator, qubit_names, **kwargs)
+        density_matrix = operation.density_matrix()
+        dim = int(np.round(np.sqrt(density_matrix.shape[0])))
+        density_matrix = density_matrix.reshape((dim, dim))
+        qcheat.initStateFromAmps()(
+            qureg=qureg, reals=np.real(density_matrix), imags=np.imag(density_matrix))
     elif 'PragmaRandomNoise' in tags:
         _execute_PragmaRandomNoise(
             operation, qureg,
-            calculator, qubit_names, **kwargs)
+        )
     elif 'PragmaActiveReset' in tags:
         _execute_PragmaActiveReset(
             operation, qureg,
-            calculator, qubit_names, **kwargs)
+        )
     elif 'MeasureQubit' in tags:
         _execute_MeasureQubit(
-            operation, qureg, classical_registers,
-            calculator, qubit_names, **kwargs)
+            operation, qureg, classical_bit_registers,
+        )
+    elif 'InputDefinition' in tags:
+        if operation.name() in classical_float_registers.keys():
+            classical_float_registers = operation.input()
     elif 'Definition' in tags:
         pass
     elif 'PragmaGetPauliProduct' in tags:
         _execute_GetPauliProduct(
-            operation, qureg, classical_registers,
-            calculator, qubit_names)
+            operation, qureg,
+            classical_float_registers,
+        )
     elif 'PragmaGetStateVector' in tags:
         _execute_GetStateVector(
-            operation, qureg, classical_registers,
-            calculator, qubit_names)
+            operation, qureg,
+            classical_complex_registers,
+        )
     elif 'PragmaGetDensityMatrix' in tags:
         _execute_GetStateVector(
-            operation, qureg, classical_registers,
-            calculator, qubit_names)
+            operation, qureg,
+            classical_complex_registers,
+        )
     elif 'PragmaGetOccupationProbability' in tags:
         _execute_GetOccupationProbability(
-            operation, qureg, classical_registers,
-            calculator, qubit_names)
+            operation, qureg,
+            classical_float_registers,
+        )
     elif 'PragmaGetRotatedOccupationProbability' in tags:
         _execute_GetOccupationProbability(
-            operation, qureg, classical_registers,
-            calculator, qubit_names)
-    elif 'PragmaPauliProdMeasurement' in tags:
-        _execute_PragmaPauliProdMeasurement(
-            operation, qureg, classical_registers,
-            calculator, qubit_names)
+            operation, qureg,
+            classical_float_registers,
+        )
+    elif 'PragmaConditional' in tags:
+        cast(ops.PragmaConditional, operation)
+        if operation.condition_register() not in classical_bit_registers.keys():
+            raise RuntimeError(
+                "Conditional register {} not found in classical bit registers".format(
+                    operation.condition_register()))
+        if classical_bit_registers[operation.condition_register()][operation.condition_index()]:
+            pyquest_call_circuit(
+                circuit=operation.circuit(),
+                qureg=qureg,
+                classical_bit_registers=classical_bit_registers,
+                classical_float_registers=classical_float_registers,
+                classical_complex_registers=classical_complex_registers,
+                output_bit_register_dict=output_bit_register_dict,
+            )
     elif any(pragma in tags for pragma in _ALLOWED_PRAGMAS):
         pass
     else:
-        raise ops.OperationNotInBackendError('Operation not in PyQuEST backend')
+        raise RuntimeError('Operation not in PyQuEST backend')
 
 
 def _execute_GetPauliProduct(
-        operation: ops.Operation,
+        operation: ops.PragmaGetPauliProduct,
         qureg: tqureg,
-        classical_registers: Dict[str, Union[BitRegister,
-                                             FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.PragmaGetPauliProduct, operation)
+        classical_float_registers: Dict[str, List[float]],
+) -> None:
 
-    if np.isclose(np.sum(operation._pauli_product), 0):
-        classical_registers[operation._readout].register = [1, ]
+    if operation.qubit_paulis == {}:
+        classical_float_registers[operation.readout()] = [1.0, ]
         return None
     N = qureg.numQubitsRepresented
     env = qutils.createQuestEnv()()
@@ -382,15 +277,20 @@ def _execute_GetPauliProduct(
         workspace = qutils.createQureg()(N, env)
         workspace_pp = qutils.createQureg()(N, env)
     qutils.cloneQureg()(workspace, qureg)
-    if operation._circuit is not None:
+    if operation.circuit() is not None:
         pyquest_call_circuit(
-            circuit=operation._circuit,
+            circuit=operation.circuit(),
             qureg=workspace,
-            calculator=calculator,
-            qubit_names=qubit_names,
-            classical_registers=classical_registers)
-    qubits = [i for i in range(N) if i in operation._pauli_product]
-    paulis = [3 for _ in qubits]
+            classical_bit_registers=dict(),
+            classical_float_registers=dict(),
+            classical_complex_registers=dict(),
+            output_bit_register_dict=dict(),
+        )
+    qubits = list()
+    paulis = list()
+    for qubit, pauli in operation.qubit_paulis().items():
+        qubits.append(qubit)
+        paulis.append(pauli)
     pp = qcheat.calcExpecPauliProd().call_interactive(
         qureg=workspace, qubits=qubits, paulis=paulis, workspace=workspace_pp)
     qutils.destroyQureg()(qubits=workspace_pp, env=env)
@@ -398,55 +298,27 @@ def _execute_GetPauliProduct(
     del workspace
     qutils.destroyQuestEnv()(env)
     del env
-    classical_registers[operation._readout].register = [pp, ]
+    classical_float_registers[operation.readout()] = [pp, ]
 
 
 def _execute_GetStateVector(
-        operation: ops.Operation,
+        operation: Union[ops.PragmaGetStateVector, ops.PragmaGetDensityMatrix],
         qureg: tqureg,
-        classical_registers: Dict[str, Union[BitRegister,
-                                             FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    tags = operation._operation_tags
-    set_operation: Union[ops.PragmaGetStateVector, ops.PragmaGetDensityMatrix]
+        classical_complex_registers: Dict[str, List[complex]],
+) -> None:
+    tags = operation.tags()
     if 'PragmaGetStateVector' in tags:
         is_state = True
-        set_operation = cast(ops.PragmaGetStateVector, operation)
         quest_obj = qcheat.getStateVector()
     if 'PragmaGetDensityMatrix' in tags:
         is_state = False
-        set_operation = cast(ops.PragmaGetDensityMatrix, operation)
         quest_obj = qcheat.getDensityMatrix()
 
-    if set_operation._circuit is None:
+    if operation.circuit() is None:
         if is_state is True:
             statevector = quest_obj(qureg=qureg, )
         else:
             density_matrix = quest_obj(qureg=qureg, )
-        if set_operation._qubit_mapping is not None:
-            max_mapping_qubit = np.max(list(set_operation._qubit_mapping.keys())) + 1
-            data = list()
-            ilist = list(range(2**max_mapping_qubit))
-            jlist = list()
-            for i in ilist:
-                data.append(1)
-                base = index_to_basis_state(i, number_qubits=max_mapping_qubit)
-                jlist.append(basis_state_to_index(base, set_operation._qubit_mapping))
-            if is_state is True:
-                mapping_matrix = sp.coo_matrix(
-                    (data, (jlist, ilist)),
-                    shape=(len(statevector), 2**max_mapping_qubit))
-                statevector = statevector @ mapping_matrix
-            else:
-                mapping_matrix = sp.coo_matrix(
-                    (data, (jlist, ilist)),
-                    shape=(density_matrix.shape[0], 2**max_mapping_qubit))
-                density_matrix = mapping_matrix.T @ density_matrix @ mapping_matrix
-
-        classical_registers[
-            set_operation._readout].register = statevector if is_state is True else density_matrix
     else:
         N = qureg.numQubitsRepresented
         env = qutils.createQuestEnv()()
@@ -455,57 +327,32 @@ def _execute_GetStateVector(
         else:
             workspace = qutils.createQureg()(N, env)
         qutils.cloneQureg()(workspace, qureg)
-        if set_operation._circuit is not None:
+        if operation.circuit() is not None:
             pyquest_call_circuit(
-                circuit=set_operation._circuit,
+                circuit=operation.circuit(),
                 qureg=workspace,
-                calculator=calculator,
-                qubit_names=qubit_names,
-                classical_registers=classical_registers)
+                classical_bit_registers=dict(),
+                classical_float_registers=dict(),
+                classical_complex_registers=dict(),
+                output_bit_register_dict=dict(),)
         if is_state is True:
             statevector = quest_obj(qureg=workspace)
         else:
-            density_matrix = quest_obj(qureg=workspace)
-        qutils.destroyQureg()(qubits=workspace, env=env)
-        del workspace
-        qutils.destroyQuestEnv()(env)
-        del env
-        if set_operation._qubit_mapping is not None:
-            max_mapping_qubit = np.max(list(set_operation._qubit_mapping.keys())) + 1
-            data = list()
-            ilist = list(range(2**max_mapping_qubit))
-            jlist = list()
-            for i in ilist:
-                data.append(1)
-                base = index_to_basis_state(i, number_qubits=max_mapping_qubit)
-                jlist.append(basis_state_to_index(base, set_operation._qubit_mapping))
-            if is_state is True:
-                mapping_matrix = sp.coo_matrix(
-                    (data, (jlist, ilist)),
-                    shape=(len(statevector), 2**max_mapping_qubit))
-                statevector = statevector @ mapping_matrix
-            else:
-                mapping_matrix = sp.coo_matrix(
-                    (data, (jlist, ilist)),
-                    shape=(density_matrix.shape[0], 2**max_mapping_qubit))
-                density_matrix = mapping_matrix.T @ density_matrix @ mapping_matrix
-        classical_registers[
-            set_operation._readout].register = statevector if is_state is True else density_matrix
+            density_matrix = quest_obj(qureg=workspace).flatten()
+
+    classical_complex_registers[
+        operation.readout()] = statevector if is_state is True else density_matrix
 
 
 def _execute_GetOccupationProbability(
-        operation: ops.Operation,
+        operation: Union[
+            ops.PragmaGetOccupationProbability],
         qureg: tqureg,
-        classical_registers: Dict[str, Union[BitRegister,
-                                             FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.PragmaGetOccupationProbability, operation)
-    tags = operation._operation_tags
+        classical_float_registers: Dict[str, List[float]],
+) -> None:
+    tags = operation.tags()
     quest_obj = qcheat.getOccupationProbability()
     if 'PragmaGetRotatedOccupationProbability' in tags:
-        operation = cast(ops.PragmaGetRotatedOccupationProbability, operation)
         N = qureg.numQubitsRepresented
         env = qutils.createQuestEnv()()
         if qureg.isDensityMatrix:
@@ -513,13 +360,14 @@ def _execute_GetOccupationProbability(
         else:
             workspace = qutils.createQureg()(N, env)
         qutils.cloneQureg()(workspace, qureg)
-        if operation._circuit is not None:
+        if operation.circuit() is not None:
             pyquest_call_circuit(
-                circuit=operation._circuit,
+                circuit=operation.circuit(),
                 qureg=workspace,
-                calculator=calculator,
-                qubit_names=qubit_names,
-                classical_registers=classical_registers)
+                classical_bit_registers=dict(),
+                classical_float_registers=dict(),
+                classical_complex_registers=dict(),
+                output_bit_register_dict=dict(),)
         occ_probabilities = np.real(quest_obj(qureg=workspace))
         qutils.destroyQureg()(qubits=workspace, env=env)
         del workspace
@@ -527,219 +375,44 @@ def _execute_GetOccupationProbability(
         del env
     else:
         occ_probabilities = np.real(quest_obj(qureg=qureg, ))
-        if operation._qubit_mapping is not None:
-            max_mapping_qubit = np.max(list(operation._qubit_mapping.keys())) + 1
-            data = list()
-            ilist = list(range(2**max_mapping_qubit))
-            jlist = list()
-            for i in ilist:
-                data.append(1)
-                base = index_to_basis_state(i, number_qubits=max_mapping_qubit)
-                jlist.append(basis_state_to_index(base, operation._qubit_mapping))
-            mapping_matrix = sp.coo_matrix((data, (jlist, ilist)),
-                                           shape=(len(occ_probabilities), 2**max_mapping_qubit))
-            occ_probabilities = occ_probabilities @ mapping_matrix
 
-    classical_registers[operation._readout].register = occ_probabilities
-
-
-def _execute_PragmaPauliProdMeasurement(
-        operation: ops.Operation,
-        qureg: tqureg,
-        classical_registers: Dict[str, Union[BitRegister,
-                                             FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.PragmaPauliProdMeasurement, operation)
-    quest_obj = qcheat.calcExpecPauliProd()
-    N = qureg.numQubitsRepresented
-    env = qutils.createQuestEnv()()
-    if qureg.isDensityMatrix:
-        workspace = qutils.createDensityQureg()(N, env)
-    else:
-        workspace = qutils.createQureg()(N, env)
-
-    meas = quest_obj(qureg=qureg, qubits=operation._qubits,
-                     paulis=operation._paulis, workspace=workspace)
-    qutils.destroyQureg(workspace)
-    del workspace
-    qutils.destroyQuestEnv(env)
-    del env
-    classical_registers[operation._readout].register[operation._readout_index] = meas
-
-
-def _execute_SingleQubitGate(
-        operation: ops.Operation,
-        qureg: tqureg,
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.SingleQubitGate, operation)
-    quest_obj = cast(qops.compactUnitary, _QUEST_OBJECTS['SingleQubitGate'])
-    quest_kwargs = dict()
-    quest_kwargs['qureg'] = qureg
-    if operation.is_parametrized and calculator is None:
-        raise ops.OperationNotInBackendError(
-            'Interactive PyQuEST can not be called with symbolic parameters'
-            + ', substitute parameters first')
-    parameter_dict: Dict[str, CalculatorFloat] = dict()
-    if calculator is not None:
-        for key, sarg in operation._ordered_parameter_dict.items():
-            parameter_dict[key] = (calculator.parse_get(sarg.value))
-    else:
-        for key, sarg in operation._ordered_parameter_dict.items():
-            parameter_dict[key] = sarg.value
-
-    for key in _PYQUEST_ARGUMENT_NAME_DICTS['SingleQubitGate'].keys():
-        dict_name, dict_key = _PYQUEST_ARGUMENT_NAME_DICTS['SingleQubitGate'][key]
-        if dict_name == 'qubits':
-            dict_key = cast(str, dict_key)
-            arg = operation._ordered_qubits_dict[dict_key]
-            if qubit_names is not None:
-                arg = qubit_names[arg]
-            quest_kwargs[key] = arg
-        else:
-            quest_kwargs[key] = 0
-            dict_key = cast(List[Tuple[str, complex]], dict_key)
-            for dkey, prefactor in dict_key:
-                pval = parameter_dict[dkey]
-                parg = pval * prefactor
-                quest_kwargs[key] += parg
-    quest_obj(**quest_kwargs)
-
-
-def _execute_SingleQubitGateOperation(
-        operation: ops.Operation,
-        qureg: tqureg,
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.SingleQubitGateOperation, operation)
-    quest_obj = qops.compactUnitary()
-    quest_kwargs = dict()
-    quest_kwargs['qureg'] = qureg
-    if operation.is_parametrized and calculator is None:
-        raise ops.OperationNotInBackendError(
-            'Interactive PyQuEST can not be called with symbolic parameters'
-            + ', substitute parameters first')
-    if calculator is not None:
-        alpha_r = calculator.parse_get(operation.alpha_r.value)
-        alpha_i = calculator.parse_get(operation.alpha_i.value)
-        beta_r = calculator.parse_get(operation.beta_r.value)
-        beta_i = calculator.parse_get(operation.beta_i.value)
-    else:
-        alpha_r = (operation.alpha_r.value)
-        alpha_i = (operation.alpha_i.value)
-        beta_r = (operation.beta_r.value)
-        beta_i = (operation.beta_i.value)
-
-    if qubit_names is not None:
-        qubit = qubit_names[list(operation._ordered_qubits_dict.values())[0]]
-    else:
-        qubit = list(operation._ordered_qubits_dict.values())[0]
-    quest_obj(qubit=qubit,
-              qureg=qureg,
-              alpha=alpha_r + 1j * alpha_i,
-              beta=beta_r + 1j * beta_i)
-
-
-def _execute_TwoQubitGateOperation(
-        operation: ops.Operation,
-        qureg: tqureg,
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.TwoQubitGateOperation, operation)
-    quest_obj = qops.twoQubitUnitary()
-    if operation.is_parametrized and calculator is None:
-        raise ops.OperationNotInBackendError(
-            'Interactive PyQuEST can not be called with symbolic parameters'
-            + ', substitute parameters first')
-    parameter_dict: Dict[str, CalculatorFloat] = dict()
-    if calculator is not None:
-        for key, sarg in operation._ordered_parameter_dict.items():
-            parameter_dict[key] = (calculator.parse_get(sarg.value))
-    else:
-        for key, sarg in operation._ordered_parameter_dict.items():
-            parameter_dict[key] = sarg.value
-
-    get_matrix = getattr(operation, 'unitary_matrix_from_parameters', None)
-    if get_matrix is None:
-        raise RuntimeError('Cannot find unitary matrix for gate')
-    matrix = get_matrix(**parameter_dict)
-    if ('control' in operation._ordered_qubits_dict.keys()
-            and 'qubit' in operation._ordered_qubits_dict.keys()):
-        control = operation._ordered_qubits_dict['control']
-        qubit = operation._ordered_qubits_dict['qubit']
-    elif('i' in operation._ordered_qubits_dict.keys()
-            and 'j' in operation._ordered_qubits_dict.keys()):
-        control = operation._ordered_qubits_dict['j']
-        qubit = operation._ordered_qubits_dict['i']
-    else:
-        raise ValueError("Only 'control' and 'qubit' or 'i' and 'j' "
-                         + "are allowed as qubit names in a two qubit gate")
-
-    if qubit_names is not None:
-        qubit = qubit_names[qubit]
-        control = qubit_names[control]
-    quest_obj(qureg=qureg,
-              target_qubit_1=qubit,
-              target_qubit_2=control,
-              matrix=matrix)
+    classical_float_registers[operation.readout()] = occ_probabilities
 
 
 def _execute_PragmaRepeatedMeasurement(
-        operation: ops.Operation,
+        operation: ops.PragmaRepeatedMeasurement,
         qureg: tqureg,
-        registers: Dict[str, Union[BitRegister,
-                                   FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.PragmaRepeatedMeasurement, operation)
-    quest_obj = _QUEST_OBJECTS['PragmaRepeatedMeasurement']
-    index_dict = operation._qubit_mapping
+        classical_bit_registers: Dict[str, List[bool]],
+        output_bit_register_dict: Dict[str, List[List[bool]]],
+) -> None:
+    index_dict = operation.qubit_mapping()
     N = qureg.numQubitsRepresented
     if index_dict is None:
         index_dict = {i: i for i in range(N)}
-    meas = quest_obj(
+    meas = qcheat.getRepeatedMeasurement()(
         qureg=qureg,
-        number_measurements=operation._number_measurements,
+        number_measurements=operation.number_measurements(),
         qubits_to_readout_index_dict=index_dict)
-    registers[operation._readout].register = meas
+    del classical_bit_registers[operation.readout()]
+    output_bit_register_dict[operation.readout()] = meas.tolist()
 
 
 def _execute_PragmaRandomNoise(
-        operation: ops.Operation,
+        operation: ops.PragmaRandomNoise,
         qureg: tqureg,
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.PragmaRandomNoise, operation)
-    quest_obj = _QUEST_OBJECTS['PragmaRandomNoise']
-    if operation.is_parametrized and calculator is None:
-        raise ops.OperationNotInBackendError(
-            'Interactive PyQuEST can not be called with symbolic parameters'
-            + ', substitute parameters first')
+) -> None:
     applied_pauli = 0
     r0 = np.random.rand()
-    rates = [(operation._ordered_parameter_dict['depolarisation_rate'] / 4),
-             (operation._ordered_parameter_dict['depolarisation_rate'] / 4),
-             ((operation._ordered_parameter_dict['depolarisation_rate'] / 4)
-              + (operation._ordered_parameter_dict['dephasing_rate']))]
+    rates = [(operation.depolarising_rate() / 4),
+             (operation.depolarising_rate() / 4),
+             ((operation.depolarising_rate() / 4)
+              + (operation.dephasing_rate()))]
     rrates: List[float] = list()
-    if calculator is not None:
-        for r in rates:
-            rrates.append((calculator.parse_get(r.value)))
-        rates = rrates
-        gate_time = (calculator.parse_get(
-            operation._ordered_parameter_dict['gate_time'].value))
-    else:
-        for r in rates:
-            rrates.append(r.value)
-        rates = rrates
-        gate_time = float(operation._ordered_parameter_dict['gate_time'])
+
+    for r in rates:
+        rrates.append(r.float())
+    rates = rrates
+    gate_time = float(operation.gate_time())
     rates = cast(List[CalculatorFloat], rates)
     # t0 = -np.log(r0) / np.sum(rates)
     probabilities = np.zeros((3,))
@@ -751,128 +424,37 @@ def _execute_PragmaRandomNoise(
     if r0 < 1 - gate_time * np.sum(rates):
         applied_pauli = 0
     else:
-        applied_pauli = int(np.random.choice([1, 2, 3],
-                                             p=probabilities_normalised))
+        applied_pauli = np.random.choice([1, 2, 3],
+                                         size=1,
+                                         p=probabilities_normalised)
     if applied_pauli == 0:
         return None
     else:
-        from pyquest_cffi import ops as qops
         quest_objects = [None,
                          qops.pauliX(),
                          qops.pauliY(),
                          qops.pauliZ()]
         quest_obj = cast(_PYQUEST, quest_objects[int(applied_pauli)])
-        quest_kwargs: Dict[str, float] = dict()
-        quest_kwargs['qureg'] = qureg
-
-        for key in _PYQUEST_ARGUMENT_NAME_DICTS['PragmaRandomNoise'].keys():
-            dict_name, dict_key = _PYQUEST_ARGUMENT_NAME_DICTS['PragmaRandomNoise'][key]
-            if dict_name == 'qubits':
-                arg = operation._ordered_qubits_dict[dict_key]
-                if qubit_names is not None:
-                    arg = qubit_names[arg]
-                quest_kwargs[key] = arg
-            else:
-                parg = float(operation._ordered_parameter_dict[dict_key])
-                quest_kwargs[key] = parg
-        quest_obj(**quest_kwargs)
+        quest_obj(qureg=qureg, qubit=operation.qubit())
 
 
 def _execute_PragmaActiveReset(
-        operation: ops.Operation,
+        operation: ops.PragmaActiveReset,
         qureg: tqureg,
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.PragmaActiveReset, operation)
-    if qubit_names is not None:
-        qubit = qubit_names[operation._qubit]
-    else:
-        qubit = operation._qubit
-    quest_obj_list = [qops.measure(), qops.pauliX()]
-    res = quest_obj_list[0].call_interactive(qureg=qureg, qubit=qubit)
+) -> None:
+    qubit = operation.qubit()
+    res = qops.measure().call_interactive(qureg=qureg, qubit=qubit)
     if res == 1:
-        quest_obj_list[1].call_interactive(qureg=qureg, qubit=qubit)
+        qops.pauliX().call_interactive(qureg=qureg, qubit=qubit)
 
 
 def _execute_MeasureQubit(
-        operation: ops.Operation,
+        operation: ops.MeasureQubit,
         qureg: tqureg,
-        registers: Dict[str, Union[BitRegister,
-                                   FloatRegister, ComplexRegister]],
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    operation = cast(ops.MeasureQubit, operation)
-    if qubit_names is not None:
-        qubit = qubit_names[operation._qubit]
-    else:
-        qubit = operation._qubit
-    quest_obj = cast(qops.measure, _QUEST_OBJECTS['MeasureQubit'])
-    res = quest_obj.call_interactive(qureg=qureg, qubit=qubit)
-    registers[operation._readout].register[operation._readout_index] = res
-
-
-def _execute_GateOperation(
-        operation: ops.Operation,
-        qureg: tqureg,
-        tag: str,
-        calculator: Optional[Calculator] = None,
-        qubit_names: Optional[Dict[int, int]] = None,
-        **kwargs) -> None:
-    if tag in ['PragmaDamping', 'PragmaDepolarise', 'PragmaDephasing']:
-        operation = cast(ops.PragmaNoise, operation)
-        if calculator is not None:
-            probability = (calculator.parse_get(operation.probability.value))
-        else:
-            probability = operation.probability.value
-    elif tag in ['PragmaSetStateVector']:
-        set_state = cast(ops.PragmaSetStateVector, operation)
-    elif tag in ['PragmaSetDensityMatrix']:
-        set_density = cast(ops.PragmaSetDensityMatrix, operation)
-    else:
-        operation = cast(ops.GateOperation, operation)
-    quest_obj = _QUEST_OBJECTS[tag]
-    quest_kwargs = dict()
-    quest_kwargs['qureg'] = qureg
-    if operation._parametrized is True and calculator is None:
-        raise ops.OperationNotInBackendError(
-            'Interactive PyQuEST can not be called with symbolic parameters'
-            + ', substitute parameters first')
-
-    parameter_dict: Dict[str, CalculatorFloat] = dict()
-    if calculator is not None:
-        for key, sarg in operation._ordered_parameter_dict.items():
-            parameter_dict[key] = calculator.parse_get(sarg.value)
-    else:
-        for key, sarg in operation._ordered_parameter_dict.items():
-            parameter_dict[key] = CalculatorFloat(sarg).value
-
-    for key in _PYQUEST_ARGUMENT_NAME_DICTS[tag].keys():
-        dict_name, dict_key = _PYQUEST_ARGUMENT_NAME_DICTS[tag][key]
-        if dict_name == 'qubits':
-            carg = operation._ordered_qubits_dict[dict_key]
-            if qubit_names is not None:
-                carg = qubit_names[carg]
-            quest_kwargs[key] = carg
-        else:
-            parg = parameter_dict[dict_key]
-            quest_kwargs[key] = parg
-    additional_quest_args = _ADDITIONAL_QUEST_ARGS.get(tag, None)
-    if additional_quest_args is not None:
-        for key, val in additional_quest_args.items():
-            quest_kwargs[key] = val
-
-    if tag in ['PragmaDamping', 'PragmaDepolarise', 'PragmaDephasing']:
-        quest_obj(probability=probability, **quest_kwargs)
-    elif tag in ['PragmaSetStateVector']:
-        quest_obj(qureg=qureg, reals=np.real(set_state._statevec),
-                  imags=np.imag(set_state._statevec))
-    elif tag in ['PragmaSetDensityMatrix']:
-        quest_obj(qureg=qureg, reals=np.real(set_density._density_matrix),
-                  imags=np.imag(set_density._density_matrix))
-    else:
-        quest_obj(**quest_kwargs)
+        classical_bit_registers: Dict[str, List[bool]],
+) -> None:
+    res = qops.measure().call_interactive(qureg=qureg, qubit=operation.qubit())
+    classical_bit_registers[operation.readout()][operation.readout_index()] = bool(res)
 
 
 def basis_state_to_index(basis_state: Union[np.ndarray, Sequence[float]],
