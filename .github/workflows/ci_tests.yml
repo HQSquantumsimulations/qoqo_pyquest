@@ -25,7 +25,7 @@ jobs:
           python -m pip install pytest pytest-cov flake8 flake8-bugbear flake8-docstrings flake8-annotations darglint mypy
       - name: Test with pytest
         run: |
-          pip install pytest
+          pip install pytest qoqo_calculator_pyo3
           pip install -e ./
           pytest  --cov=qoqo_pyquest --cov-fail-under=80
       - name: Lint with flake8
