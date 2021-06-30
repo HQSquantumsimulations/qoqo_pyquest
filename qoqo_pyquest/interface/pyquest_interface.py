@@ -425,7 +425,7 @@ def _execute_PragmaRandomNoise(
         applied_pauli = 0
     else:
         applied_pauli = int(np.random.choice([1, 2, 3],
-                                         p=probabilities_normalised))
+                                             p=probabilities_normalised))
     if applied_pauli == 0:
         return None
     else:
