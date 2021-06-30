@@ -44,7 +44,8 @@ class PyQuestBackend(object):
             number_qubits: The number of qubits to use
             device: The device specification
             repetitions: The number of repetitions the circuit is run repeatedly,
-                         only used when random Paulis or statistical overrotations are in the circuit
+                         only used when random Paulis
+                         or statistical overrotations are in the circuit
         """
         self.name = "pyquest_cffi"
         self.number_qubits = number_qubits

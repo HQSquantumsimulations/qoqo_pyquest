@@ -46,7 +46,7 @@ _ALLOWED_PRAGMAS = ['PragmaSetNumberOfMeasurements',
                     'PragmaOverrotation',
                     'PragmaStop',
                     'PragmaGlobalPhase',
-                    'PragmaOverrotation',]
+                    'PragmaOverrotation']
 
 
 # Defining the actual call
@@ -158,7 +158,7 @@ def pyquest_call_operation(
                                 qubit=operation.target())
     elif 'ControlledPauliZ' in tags:
         qops.controlledPhaseFlip()(qureg=qureg, control=operation.control(),
-                                qubit=operation.target())
+                                   qubit=operation.target())
     elif 'RotateAroundSphericalAxis' in tags:
         qops.rotateAroundSphericalAxis()(
             qureg=qureg, qubit=operation.qubit(), theta=operation.theta().float(),
