@@ -14,3 +14,7 @@ qoqo-pyquest provides the PyQuestBackend class that allows users to simulate a q
 The PyQuestBackend can be uses together with the Measurement or DoUnitary classes of qoqo for automated observable measurements.
 
 This software is still in the beta stage. Functions and documentation are not yet complete and breaking changes can occur.
+
+## Contributing
+
+We welcome contributions to the project. If you want to contribute code, please have a look at CONTRIBUTE.md for our code contribution guidelines.
