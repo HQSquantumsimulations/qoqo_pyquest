@@ -13,5 +13,6 @@
 from setuptools import find_packages, setup
 
 setup(name='pyquest_cffi',
+      packages=find_packages(exclude=('docs')),
       version='v100.1.2',
       )

@@ -1,0 +1,12 @@
+qoqo>=0.4.0
+numpy
+pyyaml
+doc/.mock/pyquest_cffi/
+sphinx >= 2.1
+nbsphinx
+pygments
+recommonmark
+myst_parser
+sphinx_rtd_theme
+qoqo_calculator_pyo3
+qoqo_pyquest>=0.3.0

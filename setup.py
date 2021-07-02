@@ -25,8 +25,7 @@ with open(os.path.join(path, 'qoqo_pyquest/__version__.py')) as f:
 __version__ = lines[-1].strip().split("'")[1].strip()
 
 install_requires = [
-    'hqsbase>=0.7.0',
-    'qoqo>=0.3.0',
+    'qoqo>=0.4.0',
     'pyquest_cffi>=3.1.0',
     'numpy',
 ]
