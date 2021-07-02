@@ -1,9 +1,2 @@
 qoqo>=0.4.0
 numpy
-pyyaml
-.mock/pyquest_cffi/
-sphinx >= 1.4
-nbsphinx
-pygments
-recommonmark
-sphinx_rtd_theme
