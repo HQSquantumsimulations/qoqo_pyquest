@@ -6,4 +6,5 @@ sphinx >= 1.4
 nbsphinx
 pygments
 recommonmark
+myst_parser
 sphinx_rtd_theme
