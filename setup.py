@@ -27,6 +27,7 @@ __version__ = lines[-1].strip().split("'")[1].strip()
 install_requires = [
     'qoqo>=0.4.0',
     'pyquest_cffi>=3.1.0',
+    'qoqo_calculator_pyo3',
     'numpy',
 ]
 
