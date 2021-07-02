@@ -1,7 +1,7 @@
 qoqo>=0.4.0
 numpy
 pyyaml
-.mock/pyquest_cffi/
+doc/.mock/pyquest_cffi/
 sphinx >= 2.1
 nbsphinx
 pygments
