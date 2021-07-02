@@ -48,8 +48,8 @@ extensions = ['sphinx.ext.autodoc',
               'myst_parser',
               'nbsphinx']
 # automatically use sphinx-autogen
-autosummary_generate = True
-autosummary_imported_members = True
+autosummary_generate = False
+autosummary_imported_members = False
 # define mock imports for packages that are difficult to handle / install
 alist = []
 alist.extend(['pyquest_cffi'])
