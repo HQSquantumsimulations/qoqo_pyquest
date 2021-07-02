@@ -45,7 +45,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
-              'nbsphinx', ]
+              'myst_parser',
+              'nbsphinx']
 # automatically use sphinx-autogen
 autosummary_generate = True
 autosummary_imported_members = True
