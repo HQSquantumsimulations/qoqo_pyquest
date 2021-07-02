@@ -8,4 +8,5 @@ pygments
 recommonmark
 myst_parser
 sphinx_rtd_theme
+qoqo_calculator_pyo3
 qoqo_pyquest>=0.3.0
