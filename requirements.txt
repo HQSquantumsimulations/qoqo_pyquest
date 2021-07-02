@@ -1,2 +1,3 @@
 qoqo>=0.4.0
 numpy
+qoqo_calculator_pyo3
