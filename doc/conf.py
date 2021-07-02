@@ -52,8 +52,8 @@ autosummary_generate = True
 autosummary_imported_members = True
 # define mock imports for packages that are difficult to handle / install
 alist = []
-alist.extend(['hqsbase', 'pyquest_cffi'])
-autodoc_mock_imports = alist
+alist.extend(['pyquest_cffi'])
+#autodoc_mock_imports = alist
 
 # 'both': class and __init__ docstring are concatenated and inserted
 # 'class': only class docstring inserted
@@ -89,7 +89,6 @@ templates_path = ['_templates']
 # source_suffix = ['.rst', '.md']
 source_suffix = {
     '.rst': 'restructuredtext',
-    '.txt': 'markdown',
     '.md': 'markdown',
 }
 
