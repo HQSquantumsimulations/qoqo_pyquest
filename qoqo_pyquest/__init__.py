@@ -22,9 +22,12 @@ Calls PyQuest simulation via the backend and simulates the circuit.
     PyQuestBackend
 
 """
+import warnings
 from qoqo_pyquest.__version__ import __version__
 from qoqo_pyquest.interface import (
     pyquest_call_operation,
     pyquest_call_circuit
 )
 from qoqo_pyquest.backend import PyQuestBackend
+
+warnings.warn("qoqo_pyquest is deprecated, please use qoqo-quest", DeprecationWarning)
