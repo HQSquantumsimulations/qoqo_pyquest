@@ -192,8 +192,8 @@ def pyquest_call_operation(
         qcheat.initStateFromAmps()(qureg=qureg, reals=np.real(vector), imags=np.imag(vector))
     elif 'PragmaSetDensityMatrix' in tags:
         density_matrix = operation.density_matrix()
-        dim = int(np.round(np.sqrt(density_matrix.shape[0])))
-        density_matrix = density_matrix.reshape((dim, dim))
+        # dim = int(np.round(np.sqrt(density_matrix.shape[0])))
+        # density_matrix = density_matrix.reshape((dim, dim))
         qcheat.initStateFromAmps()(
             qureg=qureg, reals=np.real(density_matrix), imags=np.imag(density_matrix))
     elif 'PragmaRandomNoise' in tags:
