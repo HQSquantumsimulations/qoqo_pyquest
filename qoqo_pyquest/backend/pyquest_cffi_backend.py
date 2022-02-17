@@ -62,8 +62,9 @@ class PyQuestBackend(object):
             circuit: The circuit that is run
 
         Returns:
-            Union[None, Dict[str, 'RegisterOutput']]
-
+            Tuple[Dict[str, List[List[bool]]],
+                  Dict[str, List[List[float]]],
+                  Dict[str, List[List[complex]]]]
         """
         # Initializing the classical registers for calculation and output
         internal_bit_register_dict: Dict[str, List[bool]] = dict()
@@ -166,17 +167,16 @@ class PyQuestBackend(object):
                                   ) -> Tuple[Dict[str, List[List[bool]]],
                                              Dict[str, List[List[float]]],
                                              Dict[str, List[List[complex]]]]:
-        """Run a all circuits of a measurement with the PyQuEST backend
+        """Run all circuits of a measurement with the PyQuEST backend
 
         Args:
             measurement: The measurement that is run
 
         Returns:
-            Union[None, Dict[str, 'RegisterOutput']]
-
+            Tuple[Dict[str, List[List[bool]]],
+                  Dict[str, List[List[float]]],
+                  Dict[str, List[List[complex]]]]
         """
-        # Initializing the classical registers for calculation and output
-
         constant_circuit = measurement.constant_circuit()
         output_bit_register_dict: Dict[str, List[List[bool]]] = dict()
         output_float_register_dict: Dict[str, List[List[float]]] = dict()
@@ -208,11 +208,8 @@ class PyQuestBackend(object):
             measurement: The measurement that is run
 
         Returns:
-            Union[None, Dict[str, 'RegisterOutput']]
-
+            Optional[Dict[str, float]]
         """
-        # Initializing the classical registers for calculation and output
-
         (output_bit_register_dict,
             output_float_register_dict,
             output_complex_register_dict) = self.run_measurement_registers(measurement)

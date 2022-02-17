@@ -4,6 +4,8 @@ This changelog track changes to the qoqo pyquest project starting at version 0.4
 
 ## Not released
 
+* Updated qoqo/roqoqo dependencies to 0.9 and added deprecation warning
+
 ## 0.4.0
 
-* Updated qooq/roqoqo dependencies to 0.6
+* Updated qoqo/roqoqo dependencies to 0.6
