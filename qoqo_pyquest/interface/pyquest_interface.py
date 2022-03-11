@@ -417,7 +417,7 @@ def _execute_PragmaRandomNoise(
     probabilities = np.zeros((3,))
     for co, gamma in enumerate(rates):
         probabilities[co] = 0 if CalculatorFloat(gamma).isclose(0) else gamma
-    if np.sum(probabilities) != 1:
+    if np.sum(probabilities) != 0:
         probabilities_normalised = probabilities / np.sum(probabilities)
     # max_iteration_counter = 0
     if r0 < 1 - gate_time * np.sum(rates):

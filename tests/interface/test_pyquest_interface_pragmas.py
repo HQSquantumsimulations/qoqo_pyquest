@@ -35,11 +35,11 @@ def test_set_qureg():
     density_start = cheat.getDensityMatrix()(qureg_density)
     wave_start = cheat.getStateVector()(qureg_wave)
 
-    set_wave = np.array([2, 1, 0, 1])
+    set_wave = np.array([2, 1, 0, 1], dtype=complex)
     set_density = np.array([[1, 0, 2, 0],
                             [0, 2, 3, 3],
                             [3, 1, 0, 0],
-                            [0, 1, 2, 0]])
+                            [0, 1, 2, 0]], dtype=complex)
 
     pyquest_call_operation(operation=ops.PragmaSetStateVector(set_wave),
                            qureg=qureg_wave,
@@ -47,7 +47,7 @@ def test_set_qureg():
                            classical_float_registers=dict(),
                            classical_complex_registers=dict(),
                            output_bit_register_dict=dict(),)
-    pyquest_call_operation(operation=ops.PragmaSetDensityMatrix(set_density.flatten()),
+    pyquest_call_operation(operation=ops.PragmaSetDensityMatrix(set_density),
                            qureg=qureg_density,
                            classical_bit_registers=dict(),
                            classical_float_registers=dict(),
