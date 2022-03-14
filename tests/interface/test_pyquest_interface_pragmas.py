@@ -35,7 +35,7 @@ def test_set_qureg():
     density_start = cheat.getDensityMatrix()(qureg_density)
     wave_start = cheat.getStateVector()(qureg_wave)
 
-    set_wave = np.array([2, 1, 0, 1])
+    set_wave = np.array([2, 1, 0, 1], dtype=complex)
     set_density = np.array([[1, 0, 2, 0],
                             [0, 2, 3, 3],
                             [3, 1, 0, 0],

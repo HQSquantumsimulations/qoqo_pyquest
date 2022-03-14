@@ -45,7 +45,9 @@ _ALLOWED_PRAGMAS = ['PragmaSetNumberOfMeasurements',
                     'PragmaBoostNoise',
                     'PragmaStop',
                     'PragmaGlobalPhase',
-                    'PragmaOverrotation']
+                    'PragmaParameterSubstitution',
+                    'PragmaStartDecompositionBlock',
+                    'PragmaStopDecompositionBlock']
 
 
 # Defining the actual call
