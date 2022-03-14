@@ -1,4 +1,4 @@
-qoqo>=0.4.0
+qoqo>=0.10.0
 numpy
 pyyaml
 doc/.mock/pyquest_cffi/
@@ -8,5 +8,5 @@ pygments
 recommonmark
 myst_parser
 sphinx_rtd_theme
-qoqo_calculator_pyo3
+qoqo_calculator_pyo3>=0.6
 qoqo_pyquest>=0.3.0
